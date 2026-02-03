@@ -1,0 +1,113 @@
+body, html {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #050505;
+    color: #ffffff;
+    font-family: 'Quicksand', sans-serif;
+    overflow-x: hidden;
+}
+#atomCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+#overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: 100;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: opacity 2s;
+}
+#intro-box {
+    text-align: center;
+}
+.hausa-text {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    margin-bottom: 20px;
+    letter-spacing: 5px;
+}
+#start-journey {
+    background: none;
+    border: 1px solid #ffffff;
+    color: #ffffff;
+    padding: 15px 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    letter-spacing: 2px;
+    transition: 0.5s;
+}
+#start-journey:hover {
+    background: #ffffff;
+    color: #000;
+}
+#content {
+    position: relative;
+    z-index: 2;
+    padding: 50px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.hidden {
+    display: none;
+}
+.scroll-section {
+    max-width: 600px;
+    text-align: center;
+}
+.glow-text {
+    font-size: 2.5rem;
+    text-shadow: 0 0 10px #ffffff;
+    margin-bottom: 100vh;
+}
+.letter-text {
+    font-size: 1.4rem;
+    line-height: 1.8;
+    margin-bottom: 80vh;
+    opacity: 0;
+    transition: opacity 1.5s;
+}
+.italic {
+    font-family: 'Playfair Display', serif;
+    font-style: italic;
+}
+.meter-container {
+    margin-bottom: 80vh;
+}
+.meter-bg {
+    width: 100%;
+    height: 10px;
+    background: #222;
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 20px 0;
+}
+#meter-fill {
+    width: 0%;
+    height: 100%;
+    background: linear-gradient(90deg, #ff4d4d, #ffffff);
+    box-shadow: 0 0 15px #ff4d4d;
+}
+.final-space {
+    height: 50vh;
+}
+.kneel-text {
+    font-size: 2rem;
+    margin-bottom: 20vh;
+    color: #ff4d4d;
+}
+.visible {
+    opacity: 1 !important;
+}
