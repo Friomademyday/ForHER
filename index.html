@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Riyerikan</title>
+    <title>For Riyerikan</title>
     <style>
         body, html {
             margin: 0;
@@ -12,247 +12,326 @@
             height: 100%;
             background-color: #000;
             color: #fff;
-            font-family: 'serif';
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
             overflow: hidden;
-            touch-action: none;
+            -webkit-font-smoothing: antialiased;
         }
-        #stage {
+        #main-container {
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
             position: relative;
         }
-        .screen {
+        .view {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: opacity 2s ease-in-out;
-            padding: 20px;
+            padding: 30px;
             box-sizing: border-box;
-            text-align: center;
+            transition: opacity 1.5s ease;
         }
         .hidden {
             opacity: 0;
             pointer-events: none;
         }
-        .whatsapp-bubble {
-            background: #121b21;
-            padding: 15px;
-            border-radius: 10px;
-            max-width: 80%;
-            margin-bottom: 30px;
-            border-left: 4px solid #00a884;
-            animation: fadeIn 1s;
-        }
-        .btn-container {
+        .chat-container {
+            width: 100%;
+            max-width: 400px;
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+        .bubble {
+            background: #262629;
+            padding: 16px 20px;
+            border-radius: 20px;
+            max-width: 85%;
+            font-size: 1.1rem;
+            line-height: 1.4;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .joy-name {
+            font-size: 0.8rem;
+            color: #8e8e93;
+            margin-bottom: 4px;
+            margin-left: 8px;
+        }
+        .options {
+            margin-top: 40px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
             width: 100%;
-            max-width: 250px;
         }
-        button {
-            padding: 15px;
-            background: none;
-            border: 1px solid #444;
-            color: #fff;
+        .ios-btn {
+            width: 100%;
+            padding: 18px;
+            border-radius: 14px;
+            border: none;
             font-size: 1rem;
+            font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: transform 0.2s, background 0.3s;
         }
-        #truthBtn {
-            position: relative;
-            color: #666;
-        }
-        #abyss {
-            background: radial-gradient(circle, #0a0a0a 0%, #000 100%);
-        }
-        .thought {
-            position: absolute;
-            font-size: 0.9rem;
+        #real-btn {
+            background: rgba(255, 255, 255, 0.1);
             color: #444;
-            white-space: nowrap;
-            pointer-events: none;
+            border: 1px solid #333;
         }
-        #counter {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #222;
+        #fake-btn {
+            background: #fff;
+            color: #000;
         }
-        #flame-container {
-            background: linear-gradient(to bottom, #1a0500, #000);
-            overflow-y: auto;
+        #reflection-view {
+            background: #000;
+        }
+        #year-display {
+            font-size: 5rem;
+            font-weight: 200;
+            color: rgba(255,255,255,0.05);
+            position: absolute;
+            z-index: 0;
+        }
+        #thought-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+        .holding-prompt {
+            position: absolute;
+            bottom: 50px;
+            color: #8e8e93;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        #confession-view {
             display: block;
-            padding-top: 100px;
+            overflow-y: auto;
+            background: #000;
+            padding: 60px 25px;
         }
-        .letter-content {
-            max-width: 500px;
+        .letter-wrapper {
+            max-width: 600px;
             margin: 0 auto;
-            line-height: 2;
-            font-size: 1.2rem;
-            text-align: left;
-            padding-bottom: 200px;
         }
-        .typing {
-            font-style: italic;
-            color: #ff4d4d;
-            margin-bottom: 20px;
+        .typing-dot {
+            width: 6px;
+            height: 6px;
+            background: #8e8e93;
+            border-radius: 50%;
+            display: inline-block;
+            animation: bounce 1.4s infinite ease-in-out both;
         }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1.0); }
+        }
+        .reveal-text {
+            font-size: 1.25rem;
+            line-height: 1.7;
+            color: #efefef;
+            font-weight: 400;
+        }
+        .final-hausa {
+            margin-top: 50px;
+            font-size: 1.8rem;
+            color: #ff3b30;
+            font-weight: 700;
+            text-align: center;
         }
     </style>
 </head>
 <body>
 
-    <div id="stage">
-        <div id="screen1" class="screen">
-            <div class="whatsapp-bubble">
-                <strong>Joy:</strong> I love you
+<div id="main-container">
+    <div id="view-1" class="view">
+        <div class="chat-container">
+            <div>
+                <div class="joy-name">Joy</div>
+                <div class="bubble">I love you</div>
             </div>
-            <div class="btn-container">
-                <button id="truthBtn">I love you too</button>
-                <button id="lustBtn">It's just lust</button>
-            </div>
-        </div>
-
-        <div id="screen2" class="screen hidden">
-            <div id="abyss-instruction">Hold the screen to reflect...</div>
-            <div id="counter">2022</div>
-            <div id="thought-field"></div>
-        </div>
-
-        <div id="screen3" class="screen hidden" style="display: block; overflow-y: scroll;">
-            <div class="letter-content" id="final-letter">
-                <div id="typing-indicator" class="typing">Thinking...</div>
-                <div id="confession-text"></div>
+            <div class="options">
+                <button id="real-btn" class="ios-btn">I love you too</button>
+                <button id="fake-btn" class="ios-btn">It's just lust</button>
             </div>
         </div>
     </div>
 
-    <script>
-        const truthBtn = document.getElementById('truthBtn');
-        const lustBtn = document.getElementById('lustBtn');
-        const screen1 = document.getElementById('screen1');
-        const screen2 = document.getElementById('screen2');
-        const screen3 = document.getElementById('screen3');
-        const counter = document.getElementById('counter');
-        const thoughtField = document.getElementById('thought-field');
-        const confessionText = document.getElementById('confession-text');
-        const typingIndicator = document.getElementById('typing-indicator');
+    <div id="view-2" class="view hidden">
+        <div id="year-display">2022</div>
+        <canvas id="thought-canvas"></canvas>
+        <div class="holding-prompt">Hold to remember...</div>
+    </div>
 
-        const thoughts = [
-            "Why did I lie?",
-            "Ina fatan tana lafiya.",
-            "I'm surrounded by people but I'm only looking for her",
-            "I loved the soul God put in her.",
-            "Why didn't I just say the truth?",
-            "The way she speaks Hausa...",
-            "Every atom is waiting.",
-            "I loved her then. I just didn't want to admit it.",
-            "Is she laughing right now?",
-            "It was never a phase.",
-            "Why do I worry?",
-            "It's obvious, isn't it?"
-        ];
+    <div id="view-3" class="view hidden">
+        <div class="letter-wrapper">
+            <div id="ios-typing" style="margin-bottom: 30px;">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+            <div id="letter-body" class="reveal-text"></div>
+        </div>
+    </div>
+</div>
 
-        const fullLetter = `Riyerikan,<br><br>I love you and every atom in my body, every fiber loves you. I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa, your face, your personality.<br><br>I meant this in everyway. I didn't just love your flesh, I loved the soul God put in her—it was so pure and natural. I never wanted her to be out of my life, even if she wanted to push me away, I'll always come back.<br><br>Even if it doesn't work out I'll always be there for her cause my love for her isn't a phase neither is it a "to" cause this "to" shall not pass away.<br><br>You make me want to be a better human being overall. I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.<br><br>I see your text message and I use over an hour to wonder what I should reply to it with... not out of confusion, but out of respect and the perfection I see in you.<br><br>You are my everlasting twin flame that will keep burning. And even though we're miles away, I'll grow.<br><br>Eventually someday I'll meet you, and on one knee will I go down.`;
+<script>
+    const realBtn = document.getElementById('real-btn');
+    const fakeBtn = document.getElementById('fake-btn');
+    const view1 = document.getElementById('view-1');
+    const view2 = document.getElementById('view-2');
+    const view3 = document.getElementById('view-3');
+    const canvas = document.getElementById('thought-canvas');
+    const ctx = canvas.getContext('2d');
+    const yearDisplay = document.getElementById('year-display');
+    const letterBody = document.getElementById('letter-body');
+    const typingIndicator = document.getElementById('ios-typing');
 
-        truthBtn.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            const x = Math.random() * (window.innerWidth - 100);
-            const y = Math.random() * (window.innerHeight - 50);
-            truthBtn.style.position = 'fixed';
-            truthBtn.style.left = x + 'px';
-            truthBtn.style.top = y + 'px';
-            truthBtn.innerText = "Error: Fear detected";
-        });
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-        lustBtn.addEventListener('click', () => {
-            screen1.classList.add('hidden');
-            setTimeout(() => {
-                screen1.style.display = 'none';
-                screen2.classList.remove('hidden');
-            }, 2000);
-        });
+    const thoughtTexts = [
+        "Why did I lie?",
+        "Ina fatan tana lafiya.",
+        "I'm surrounded by people but I'm only looking for you",
+        "I loved the soul God put in you.",
+        "Why didn't I just say the truth?",
+        "The way you speak Hausa...",
+        "Every atom is waiting.",
+        "I loved you then. I just didn't want to admit it.",
+        "Is she laughing right now?",
+        "It was never a phase.",
+        "Why do I worry?",
+        "It's obvious, isn't it?",
+        "I loved your soul, not just your flesh.",
+        "You're the perfection I see."
+    ];
 
-        let holdTimer;
-        let year = 2022;
-        let isHolding = false;
+    const confession = `I love you and every atom in my body, every fiber loves you. I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa, your face, your personality.<br><br>I meant this in every way. I didn't just love your flesh, I loved the soul God put in you—it was so pure and natural. I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.<br><br>Even if it doesn't work out I'll always be there for you cause my love for you isn't a phase neither is it a "to" cause this "to" shall not pass away.<br><br>You make me want to be a better human being overall. I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.<br><br>I see your text message and I use over an hour to wonder what I should reply to it with... not out of confusion, but out of respect and the perfection I see in you.<br><br>You are my everlasting twin flame that will keep burning. And even though we're miles away, I'll grow.<br><br>Eventually someday I'll meet you, and on one knee will I go down.`;
 
-        function spawnThought() {
-            const t = document.createElement('div');
-            t.className = 'thought';
-            t.innerText = thoughts[Math.floor(Math.random() * thoughts.length)];
-            t.style.left = Math.random() * 80 + 10 + '%';
-            t.style.top = Math.random() * 80 + 10 + '%';
-            thoughtField.appendChild(t);
-            setTimeout(() => t.remove(), 3000);
+    realBtn.addEventListener('touchstart', (e) => {
+        e.preventDefault();
+        const x = Math.random() * (window.innerWidth - 150);
+        const y = Math.random() * (window.innerHeight - 100);
+        realBtn.style.position = 'fixed';
+        realBtn.style.left = x + 'px';
+        realBtn.style.top = y + 'px';
+        realBtn.style.opacity = '0.5';
+    });
+
+    fakeBtn.addEventListener('click', () => {
+        view1.classList.add('hidden');
+        setTimeout(() => {
+            view1.style.display = 'none';
+            view2.classList.remove('hidden');
+        }, 1500);
+    });
+
+    let holdActive = false;
+    let currentYear = 2022;
+    let particles = [];
+
+    class Particle {
+        constructor(text) {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.text = text;
+            this.opacity = 0;
+            this.speed = Math.random() * 0.5 + 0.2;
         }
+        draw() {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+            ctx.font = '14px -apple-system';
+            ctx.fillText(this.text, this.x, this.y);
+        }
+        update() {
+            this.y -= this.speed;
+            if (this.opacity < 0.6) this.opacity += 0.01;
+            if (this.y < -20) {
+                this.y = canvas.height + 20;
+                this.opacity = 0;
+            }
+        }
+    }
 
-        function handleStart() {
-            isHolding = true;
-            holdTimer = setInterval(() => {
-                if (year < 2025) {
-                    year++;
-                    counter.innerText = year;
-                    spawnThought();
-                    spawnThought();
-                } else {
-                    clearInterval(holdTimer);
-                    transitionToFinal();
+    function animateAbyss() {
+        if (!holdActive) return;
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
+        });
+        requestAnimationFrame(animateAbyss);
+    }
+
+    window.addEventListener('touchstart', (e) => {
+        if (view2.classList.contains('hidden')) return;
+        holdActive = true;
+        animateAbyss();
+        holdInterval = setInterval(() => {
+            if (currentYear < 2026) {
+                currentYear++;
+                yearDisplay.innerText = currentYear === 2026 ? "December" : currentYear;
+                if (particles.length < 25) {
+                    particles.push(new Particle(thoughtTexts[Math.floor(Math.random() * thoughtTexts.length)]));
                 }
-            }, 100);
-        }
+            } else {
+                clearInterval(holdInterval);
+                finishReflection();
+            }
+        }, 150);
+    });
 
-        function handleEnd() {
-            isHolding = false;
-            clearInterval(holdTimer);
-        }
+    window.addEventListener('touchend', () => {
+        holdActive = false;
+        clearInterval(holdInterval);
+    });
 
-        window.addEventListener('touchstart', handleStart);
-        window.addEventListener('touchend', handleEnd);
+    function finishReflection() {
+        view2.classList.add('hidden');
+        setTimeout(() => {
+            view2.style.display = 'none';
+            view3.classList.remove('hidden');
+            initFinalType();
+        }, 1500);
+    }
 
-        function transitionToFinal() {
-            window.removeEventListener('touchstart', handleStart);
-            screen2.classList.add('hidden');
-            setTimeout(() => {
-                screen2.style.display = 'none';
-                screen3.classList.remove('hidden');
-                startTyping();
-            }, 2000);
-        }
-
-        function startTyping() {
-            let i = 0;
-            typingIndicator.innerText = "Carefully choosing words for your perfection...";
-            
-            setTimeout(() => {
-                typingIndicator.style.display = 'none';
-                const interval = setInterval(() => {
-                    if (i < fullLetter.length) {
-                        if (fullLetter.substring(i, i + 4) === '<br>') {
-                            confessionText.innerHTML += '<br>';
-                            i += 4;
-                        } else {
-                            confessionText.innerHTML += fullLetter.charAt(i);
-                            i++;
-                        }
-                        window.scrollTo(0, document.body.scrollHeight);
+    function initFinalType() {
+        setTimeout(() => {
+            typingIndicator.style.display = 'none';
+            let index = 0;
+            const type = () => {
+                if (index < confession.length) {
+                    if (confession.substring(index, index + 4) === '<br>') {
+                        letterBody.innerHTML += '<br>';
+                        index += 4;
                     } else {
-                        clearInterval(interval);
-                        confessionText.innerHTML += '<br><br><strong style="color:#ff4d4d; font-size: 2rem;">Zuciyata tana bugawa gareki.</strong>';
+                        letterBody.innerHTML += confession.charAt(index);
+                        index++;
                     }
-                }, 50);
-            }, 5000);
-        }
-    </script>
+                    setTimeout(type, 45);
+                    view3.scrollTop = view3.scrollHeight;
+                } else {
+                    letterBody.innerHTML += '<div class="final-hausa">Zuciyata tana bugawa gareki.</div>';
+                }
+            };
+            type();
+        }, 4000);
+    }
+</script>
+
 </body>
 </html>
