@@ -3,88 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>For Riyerikan</title>
+    <title>Riyerikan | Eternal</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #000;
-            color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+            background-color: #020205;
+            color: #ffffff;
+            font-family: 'Optima', sans-serif;
             overflow: hidden;
-            -webkit-font-smoothing: antialiased;
             -webkit-user-select: none;
-            -moz-user-select: none;
-            -ms-user-select: none;
             user-select: none;
-            -webkit-touch-callout: none;
         }
-        #main-container {
+        #universe {
+            position: relative;
             width: 100%;
             height: 100%;
-            position: relative;
+            overflow: hidden;
         }
-        .view {
+        .scene {
             position: absolute;
-            top: 0;
-            left: 0;
             width: 100%;
             height: 100%;
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 30px;
-            box-sizing: border-box;
-            transition: opacity 1.5s ease;
+            transition: opacity 2s ease, transform 2s ease;
+            z-index: 10;
         }
         .hidden {
             opacity: 0;
             pointer-events: none;
+            transform: scale(1.1);
         }
-        .chat-container {
-            width: 100%;
-            max-width: 400px;
-        }
-        .bubble {
-            background: #262629;
-            padding: 16px 20px;
-            border-radius: 20px;
-            max-width: 85%;
-            font-size: 1.1rem;
-            align-self: flex-start;
-            border-bottom-left-radius: 4px;
-            animation: slideIn 0.5s ease-out;
-        }
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-        .ios-btn {
-            width: 100%;
-            max-width: 280px;
-            padding: 18px;
-            border-radius: 14px;
-            border: none;
-            font-size: 1rem;
-            font-weight: 600;
-            margin-top: 15px;
-            outline: none;
-        }
-        #fake-btn { background: #fff; color: #000; }
-        #real-btn { background: rgba(255, 255, 255, 0.1); color: #555; border: 1px solid #333; }
-        
-        #year-display {
-            font-size: 7rem;
-            font-weight: 100;
-            color: rgba(255,255,255,0.08);
-            position: absolute;
-            pointer-events: none;
-            z-index: 0;
-        }
-        #thought-canvas {
+        #star-canvas {
             position: absolute;
             top: 0;
             left: 0;
@@ -92,95 +47,150 @@
             height: 100%;
             z-index: 1;
         }
-        .envelope-text {
-            font-family: "Georgia", serif;
-            font-size: 1.35rem;
-            line-height: 1.7;
-            text-align: center;
-            max-width: 90%;
-            transition: opacity 0.8s ease, transform 0.8s ease;
-            opacity: 0;
-            transform: translateY(15px);
-        }
-        .envelope-text.active {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        .tap-hint {
+        .star-label {
             position: absolute;
-            bottom: 60px;
-            font-size: 0.65rem;
-            color: #444;
-            letter-spacing: 3px;
+            font-size: 0.8rem;
+            letter-spacing: 2px;
+            color: rgba(255,255,255,0.6);
             text-transform: uppercase;
-            animation: pulse 2s infinite;
         }
-        @keyframes pulse {
-            0% { opacity: 0.3; }
-            50% { opacity: 0.8; }
-            100% { opacity: 0.3; }
+        .choice-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 2px;
+            border: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        .space-btn {
+            display: block;
+            width: 200px;
+            padding: 15px;
+            margin: 10px auto;
+            background: none;
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: 0.4s;
+        }
+        #truth-btn {
+            color: rgba(255,255,255,0.2);
+        }
+        #year-vortex {
+            font-size: 8rem;
+            font-weight: 900;
+            background: linear-gradient(to bottom, #fff, #222);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            opacity: 0.1;
+        }
+        .constellation-text {
+            max-width: 80%;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 1.2rem;
+            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+        }
+        .tap-zone {
+            position: absolute;
+            bottom: 40px;
+            font-size: 0.7rem;
+            opacity: 0.5;
+            letter-spacing: 4px;
+        }
+        .flash {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: #fff;
+            z-index: 1000;
+            opacity: 0;
+            pointer-events: none;
         }
     </style>
 </head>
 <body>
 
-<div id="main-container">
-    <div id="view-1" class="view">
-        <div class="chat-container">
-            <div style="font-size: 0.85rem; color: #8e8e93; margin-bottom: 8px; margin-left: 12px; font-weight: 500;">Joy</div>
-            <div class="bubble">I love you</div>
-            <div style="margin-top: 60px; display: flex; flex-direction: column; align-items: center;">
-                <button id="real-btn" class="ios-btn">I love you too</button>
-                <button id="fake-btn" class="ios-btn">It's just lust</button>
-            </div>
+<div id="universe">
+    <canvas id="star-canvas"></canvas>
+    <div id="flash-overlay" class="flash"></div>
+
+    <div id="scene-1" class="scene">
+        <div class="choice-box">
+            <p style="margin-bottom: 30px; font-style: italic;">Joy: "I love you"</p>
+            <button id="truth-btn" class="space-btn">The Truth</button>
+            <button id="fake-btn" class="space-btn">"It's just lust"</button>
         </div>
     </div>
 
-    <div id="view-2" class="view hidden">
-        <div id="year-display">2022</div>
-        <canvas id="thought-canvas"></canvas>
+    <div id="scene-2" class="scene hidden">
+        <div id="year-vortex">2022</div>
+        <div style="color: rgba(255,255,255,0.4); margin-top: 20px;">Reflecting on the soul I tried to ignore...</div>
     </div>
 
-    <div id="view-3" class="view hidden">
-        <div id="message-target" class="envelope-text"></div>
-        <div class="tap-hint" id="tap-prompt">Tap to continue</div>
+    <div id="scene-3" class="scene hidden">
+        <div id="message-display" class="constellation-text"></div>
+        <div class="tap-zone">TAP TO ALIGN STARS</div>
     </div>
 </div>
 
 <script>
-    const realBtn = document.getElementById('real-btn');
-    const fakeBtn = document.getElementById('fake-btn');
-    const view1 = document.getElementById('view-1');
-    const view2 = document.getElementById('view-2');
-    const view3 = document.getElementById('view-3');
-    const yearDisplay = document.getElementById('year-display');
-    const canvas = document.getElementById('thought-canvas');
+    const canvas = document.getElementById('star-canvas');
     const ctx = canvas.getContext('2d');
-    const messageTarget = document.getElementById('message-target');
-    const tapPrompt = document.getElementById('tap-prompt');
+    const truthBtn = document.getElementById('truth-btn');
+    const fakeBtn = document.getElementById('fake-btn');
+    const scene1 = document.getElementById('scene-1');
+    const scene2 = document.getElementById('scene-2');
+    const scene3 = document.getElementById('scene-3');
+    const yearVortex = document.getElementById('year-vortex');
+    const flash = document.getElementById('flash-overlay');
+    const messageDisplay = document.getElementById('message-display');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const phrases = [
-        "Why did I lie?",
+    let stars = [];
+    let particles = [];
+    let isTransitioning = false;
+
+    class Star {
+        constructor() {
+            this.x = Math.random() * canvas.width;
+            this.y = Math.random() * canvas.height;
+            this.size = Math.random() * 1.5;
+            this.blink = Math.random() * 0.05;
+            this.alpha = Math.random();
+        }
+        draw() {
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        update() {
+            this.alpha += this.blink;
+            if (this.alpha > 1 || this.alpha < 0) this.blink *= -1;
+        }
+    }
+
+    const thoughts = [
         "Ina fatan tana lafiya.",
         "I'm only looking for you",
-        "I loved the soul God put in you.",
-        "Why didn't I just say the truth?",
+        "The soul God put in you.",
         "The way you speak Hausa...",
         "Every atom is waiting.",
-        "I loved you then. I just didn't want to admit it.",
         "Zuciyata ba ta karya take yi ba.",
-        "I loved your soul, not just your flesh.",
-        "I meant this in every way.",
-        "Perfection I see in you."
+        "Perfection I see in you.",
+        "Why did I lie?"
     ];
 
-    const confessionSteps = [
+    const finalStory = [
         "I love you and every atom in my body, every fiber loves you.",
         "I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa.",
-        "I meant this in every way. I didn't just love your flesh, I loved the soul God put in you—it was so pure and natural.",
+        "I meant this in every way. I didn't just love your flesh, I loved the soul God put in you.",
         "I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.",
         "My love for you isn't a phase neither is it a 'to' cause this 'to' shall not pass away.",
         "I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.",
@@ -188,111 +198,79 @@
         "Not out of confusion, but out of respect and the perfection I see in you.",
         "You are my everlasting twin flame that will keep burning.",
         "Eventually someday I'll meet you, and on one knee will I go down.",
-        "<span style='color:#ff3b30; font-weight:bold; font-size:1.9rem; display:block; margin-top:20px;'>Zuciyata tana bugawa gareki.</span>"
+        "<span style='color:#ff4d4d; font-size: 2rem; font-weight: bold;'>Zuciyata tana bugawa gareki.</span>"
     ];
 
-    realBtn.addEventListener('touchstart', (e) => {
+    function initStars() {
+        for(let i=0; i<200; i++) stars.push(new Star());
+    }
+
+    function animate() {
+        ctx.fillStyle = 'rgba(2, 2, 5, 0.2)';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        stars.forEach(s => { s.update(); s.draw(); });
+        requestAnimationFrame(animate);
+    }
+
+    truthBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        realBtn.style.position = 'fixed';
-        realBtn.style.left = Math.random() * (window.innerWidth - 180) + 'px';
-        realBtn.style.top = Math.random() * (window.innerHeight - 80) + 'px';
-        realBtn.style.opacity = '0.4';
+        truthBtn.style.position = 'fixed';
+        truthBtn.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+        truthBtn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
     });
 
     fakeBtn.addEventListener('click', () => {
-        view1.classList.add('hidden');
+        scene1.classList.add('hidden');
         setTimeout(() => {
-            view1.style.display = 'none';
-            view2.classList.remove('hidden');
-            startAutoReflection();
-        }, 1200);
+            scene1.style.display = 'none';
+            scene2.classList.remove('hidden');
+            startCosmicReflection();
+        }, 2000);
     });
 
-    let particles = [];
-    class Thought {
-        constructor() {
-            this.x = Math.random() * (canvas.width - 100) + 50;
-            this.y = canvas.height + 20;
-            this.text = phrases[Math.floor(Math.random() * phrases.length)];
-            this.opacity = 0;
-            this.speed = Math.random() * 0.8 + 0.4;
-            this.fadeSpeed = 0.01;
-        }
-        update() {
-            this.y -= this.speed;
-            if (this.y < canvas.height * 0.7 && this.opacity < 0.6) {
-                this.opacity += this.fadeSpeed;
-            }
-            if (this.y < canvas.height * 0.2) {
-                this.opacity -= this.fadeSpeed;
-            }
-        }
-        draw() {
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-            ctx.font = '13px -apple-system, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.fillText(this.text, this.x, this.y);
-        }
-    }
-
-    let animationId;
-    function animate() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (Math.random() < 0.04) particles.push(new Thought());
-        particles.forEach((p, i) => {
-            p.update();
-            p.draw();
-            if (p.y < -20 || p.opacity <= 0) particles.splice(i, 1);
-        });
-        animationId = requestAnimationFrame(animate);
-    }
-
-    function startAutoReflection() {
-        animate();
-        let currentYear = 2022;
-        const yearInt = setInterval(() => {
-            if (currentYear < 2025) {
-                currentYear++;
-                yearDisplay.innerText = currentYear;
+    function startCosmicReflection() {
+        let yr = 2022;
+        const interval = setInterval(() => {
+            if (yr < 2025) {
+                yr++;
+                yearVortex.innerText = yr;
             } else {
-                clearInterval(yearInt);
+                clearInterval(interval);
                 setTimeout(() => {
-                    yearDisplay.innerText = "December";
-                    yearDisplay.style.color = "rgba(255, 59, 48, 0.2)";
+                    yearVortex.innerText = "DECEMBER";
+                    yearVortex.style.opacity = "0.5";
                 }, 1000);
-                setTimeout(() => {
-                    cancelAnimationFrame(animationId);
-                    toFinalMessage();
-                }, 4000);
+                setTimeout(triggerSupernova, 3500);
             }
-        }, 2000); 
-    }
-
-    function toFinalMessage() {
-        view2.classList.add('hidden');
-        setTimeout(() => {
-            view2.style.display = 'none';
-            view3.classList.remove('hidden');
-            showNextStep();
         }, 1500);
     }
 
-    let stepIndex = 0;
-    function showNextStep() {
-        if (stepIndex < confessionSteps.length) {
-            messageTarget.classList.remove('active');
+    function triggerSupernova() {
+        flash.style.opacity = '1';
+        setTimeout(() => {
+            scene2.style.display = 'none';
+            scene3.classList.remove('hidden');
+            flash.style.opacity = '0';
+            showNextMessage();
+        }, 1000);
+    }
+
+    let messageIndex = 0;
+    function showNextMessage() {
+        if (messageIndex < finalStory.length) {
+            messageDisplay.style.opacity = 0;
             setTimeout(() => {
-                messageTarget.innerHTML = confessionSteps[stepIndex];
-                messageTarget.classList.add('active');
-                stepIndex++;
-                if (stepIndex === confessionSteps.length) {
-                    tapPrompt.style.display = 'none';
-                }
-            }, 600);
+                messageDisplay.innerHTML = finalStory[messageIndex];
+                messageDisplay.style.opacity = 1;
+                messageIndex++;
+            }, 500);
         }
     }
 
-    view3.addEventListener('click', showNextStep);
+    scene3.addEventListener('click', showNextMessage);
+
+    initStars();
+    animate();
 </script>
 
 </body>
