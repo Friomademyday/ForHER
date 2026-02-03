@@ -15,7 +15,6 @@
             font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
-            /* Fixes the highlighting/selection issue */
             -webkit-user-select: none;
             -moz-user-select: none;
             -ms-user-select: none;
@@ -39,11 +38,15 @@
             align-items: center;
             padding: 30px;
             box-sizing: border-box;
-            transition: opacity 1s ease;
+            transition: opacity 1.5s ease;
         }
         .hidden {
             opacity: 0;
             pointer-events: none;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 400px;
         }
         .bubble {
             background: #262629;
@@ -53,6 +56,11 @@
             font-size: 1.1rem;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
+            animation: slideIn 0.5s ease-out;
+        }
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
         }
         .ios-btn {
             width: 100%;
@@ -63,16 +71,18 @@
             font-size: 1rem;
             font-weight: 600;
             margin-top: 15px;
+            outline: none;
         }
         #fake-btn { background: #fff; color: #000; }
         #real-btn { background: rgba(255, 255, 255, 0.1); color: #555; border: 1px solid #333; }
         
         #year-display {
-            font-size: 6rem;
+            font-size: 7rem;
             font-weight: 100;
-            color: rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.08);
             position: absolute;
-            pointer-events: none; /* Prevents clicking/highlighting the year */
+            pointer-events: none;
+            z-index: 0;
         }
         #thought-canvas {
             position: absolute;
@@ -80,16 +90,17 @@
             left: 0;
             width: 100%;
             height: 100%;
+            z-index: 1;
         }
         .envelope-text {
-            font-family: "Times New Roman", serif;
-            font-size: 1.4rem;
-            line-height: 1.6;
+            font-family: "Georgia", serif;
+            font-size: 1.35rem;
+            line-height: 1.7;
             text-align: center;
             max-width: 90%;
-            transition: all 0.8s ease;
+            transition: opacity 0.8s ease, transform 0.8s ease;
             opacity: 0;
-            transform: translateY(20px);
+            transform: translateY(15px);
         }
         .envelope-text.active {
             opacity: 1;
@@ -97,11 +108,17 @@
         }
         .tap-hint {
             position: absolute;
-            bottom: 40px;
-            font-size: 0.7rem;
+            bottom: 60px;
+            font-size: 0.65rem;
             color: #444;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-transform: uppercase;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+            100% { opacity: 0.3; }
         }
     </style>
 </head>
@@ -109,10 +126,10 @@
 
 <div id="main-container">
     <div id="view-1" class="view">
-        <div style="width: 100%; max-width: 400px;">
-            <div style="font-size: 0.8rem; color: #8e8e93; margin-bottom: 5px; margin-left: 10px;">Joy</div>
+        <div class="chat-container">
+            <div style="font-size: 0.85rem; color: #8e8e93; margin-bottom: 8px; margin-left: 12px; font-weight: 500;">Joy</div>
             <div class="bubble">I love you</div>
-            <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center;">
+            <div style="margin-top: 60px; display: flex; flex-direction: column; align-items: center;">
                 <button id="real-btn" class="ios-btn">I love you too</button>
                 <button id="fake-btn" class="ios-btn">It's just lust</button>
             </div>
@@ -122,12 +139,11 @@
     <div id="view-2" class="view hidden">
         <div id="year-display">2022</div>
         <canvas id="thought-canvas"></canvas>
-        <div style="position: absolute; bottom: 80px; color: #444; font-size: 0.8rem;">HOLD TO REFLECT</div>
     </div>
 
     <div id="view-3" class="view hidden">
         <div id="message-target" class="envelope-text"></div>
-        <div class="tap-hint">Tap to continue</div>
+        <div class="tap-hint" id="tap-prompt">Tap to continue</div>
     </div>
 </div>
 
@@ -141,6 +157,7 @@
     const canvas = document.getElementById('thought-canvas');
     const ctx = canvas.getContext('2d');
     const messageTarget = document.getElementById('message-target');
+    const tapPrompt = document.getElementById('tap-prompt');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
@@ -148,16 +165,16 @@
     const phrases = [
         "Why did I lie?",
         "Ina fatan tana lafiya.",
-        "I'm surrounded by people but I'm only looking for you",
+        "I'm only looking for you",
         "I loved the soul God put in you.",
         "Why didn't I just say the truth?",
         "The way you speak Hausa...",
         "Every atom is waiting.",
         "I loved you then. I just didn't want to admit it.",
-        "Is she laughing right now?",
-        "It was never a phase.",
         "Zuciyata ba ta karya take yi ba.",
-        "I loved your soul, not just your flesh."
+        "I loved your soul, not just your flesh.",
+        "I meant this in every way.",
+        "Perfection I see in you."
     ];
 
     const confessionSteps = [
@@ -171,14 +188,15 @@
         "Not out of confusion, but out of respect and the perfection I see in you.",
         "You are my everlasting twin flame that will keep burning.",
         "Eventually someday I'll meet you, and on one knee will I go down.",
-        "<span style='color:#ff3b30; font-weight:bold; font-size:2rem;'>Zuciyata tana bugawa gareki.</span>"
+        "<span style='color:#ff3b30; font-weight:bold; font-size:1.9rem; display:block; margin-top:20px;'>Zuciyata tana bugawa gareki.</span>"
     ];
 
     realBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
         realBtn.style.position = 'fixed';
-        realBtn.style.left = Math.random() * (window.innerWidth - 150) + 'px';
-        realBtn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        realBtn.style.left = Math.random() * (window.innerWidth - 180) + 'px';
+        realBtn.style.top = Math.random() * (window.innerHeight - 80) + 'px';
+        realBtn.style.opacity = '0.4';
     });
 
     fakeBtn.addEventListener('click', () => {
@@ -186,85 +204,95 @@
         setTimeout(() => {
             view1.style.display = 'none';
             view2.classList.remove('hidden');
-        }, 1000);
+            startAutoReflection();
+        }, 1200);
     });
 
-    let holdActive = false;
-    let year = 2022;
-    let pArray = [];
-
-    class P {
+    let particles = [];
+    class Thought {
         constructor() {
-            this.x = Math.random() * canvas.width;
+            this.x = Math.random() * (canvas.width - 100) + 50;
             this.y = canvas.height + 20;
-            this.t = phrases[Math.floor(Math.random() * phrases.length)];
-            this.o = 0;
-            this.s = Math.random() * 1 + 0.5;
+            this.text = phrases[Math.floor(Math.random() * phrases.length)];
+            this.opacity = 0;
+            this.speed = Math.random() * 0.8 + 0.4;
+            this.fadeSpeed = 0.01;
         }
-        up() {
-            this.y -= this.s;
-            if (this.o < 0.5) this.o += 0.01;
+        update() {
+            this.y -= this.speed;
+            if (this.y < canvas.height * 0.7 && this.opacity < 0.6) {
+                this.opacity += this.fadeSpeed;
+            }
+            if (this.y < canvas.height * 0.2) {
+                this.opacity -= this.fadeSpeed;
+            }
         }
         draw() {
-            ctx.fillStyle = `rgba(255,255,255,${this.o})`;
-            ctx.font = '12px -apple-system';
-            ctx.fillText(this.t, this.x, this.y);
+            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
+            ctx.font = '13px -apple-system, sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.text, this.x, this.y);
         }
     }
 
-    function loop() {
-        if (!holdActive) return;
+    let animationId;
+    function animate() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        if (Math.random() < 0.1) pArray.push(new P());
-        pArray.forEach((p, i) => {
-            p.up();
+        if (Math.random() < 0.04) particles.push(new Thought());
+        particles.forEach((p, i) => {
+            p.update();
             p.draw();
-            if (p.y < -50) pArray.splice(i, 1);
+            if (p.y < -20 || p.opacity <= 0) particles.splice(i, 1);
         });
-        requestAnimationFrame(loop);
+        animationId = requestAnimationFrame(animate);
     }
 
-    view2.addEventListener('touchstart', () => {
-        holdActive = true;
-        loop();
-        yInt = setInterval(() => {
-            if (year < 2026) {
-                year++;
-                yearDisplay.innerText = year === 2026 ? "December" : year;
+    function startAutoReflection() {
+        animate();
+        let currentYear = 2022;
+        const yearInt = setInterval(() => {
+            if (currentYear < 2025) {
+                currentYear++;
+                yearDisplay.innerText = currentYear;
             } else {
-                clearInterval(yInt);
-                toFinal();
+                clearInterval(yearInt);
+                setTimeout(() => {
+                    yearDisplay.innerText = "December";
+                    yearDisplay.style.color = "rgba(255, 59, 48, 0.2)";
+                }, 1000);
+                setTimeout(() => {
+                    cancelAnimationFrame(animationId);
+                    toFinalMessage();
+                }, 4000);
             }
-        }, 150);
-    });
+        }, 2000); 
+    }
 
-    view2.addEventListener('touchend', () => {
-        holdActive = false;
-        clearInterval(yInt);
-    });
-
-    function toFinal() {
+    function toFinalMessage() {
         view2.classList.add('hidden');
         setTimeout(() => {
             view2.style.display = 'none';
             view3.classList.remove('hidden');
-            showStep();
-        }, 1000);
+            showNextStep();
+        }, 1500);
     }
 
-    let currentStep = 0;
-    function showStep() {
-        if (currentStep < confessionSteps.length) {
+    let stepIndex = 0;
+    function showNextStep() {
+        if (stepIndex < confessionSteps.length) {
             messageTarget.classList.remove('active');
             setTimeout(() => {
-                messageTarget.innerHTML = confessionSteps[currentStep];
+                messageTarget.innerHTML = confessionSteps[stepIndex];
                 messageTarget.classList.add('active');
-                currentStep++;
-            }, 500);
+                stepIndex++;
+                if (stepIndex === confessionSteps.length) {
+                    tapPrompt.style.display = 'none';
+                }
+            }, 600);
         }
     }
 
-    view3.addEventListener('click', showStep);
+    view3.addEventListener('click', showNextStep);
 </script>
 
 </body>
