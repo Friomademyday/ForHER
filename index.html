@@ -3,41 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Riyerikan | Eternal</title>
+    <title>For Riyerikan | Eternal</title>
     <style>
         body, html {
             margin: 0;
             padding: 0;
             width: 100%;
             height: 100%;
-            background-color: #020205;
+            background-color: #010103;
             color: #ffffff;
-            font-family: 'Optima', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
             overflow: hidden;
             -webkit-user-select: none;
             user-select: none;
+            touch-action: none;
         }
         #universe {
             position: relative;
             width: 100%;
             height: 100%;
-            overflow: hidden;
-        }
-        .scene {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 2s ease, transform 2s ease;
-            z-index: 10;
-        }
-        .hidden {
-            opacity: 0;
-            pointer-events: none;
-            transform: scale(1.1);
         }
         #star-canvas {
             position: absolute;
@@ -47,57 +31,86 @@
             height: 100%;
             z-index: 1;
         }
-        .star-label {
+        .scene {
             position: absolute;
-            font-size: 0.8rem;
-            letter-spacing: 2px;
-            color: rgba(255,255,255,0.6);
-            text-transform: uppercase;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 2s ease;
+            z-index: 10;
+            padding: 20px;
+            box-sizing: border-box;
         }
-        .choice-box {
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 2px;
-            border: 1px solid rgba(255,255,255,0.1);
+        .hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        .glass-box {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(15px);
+            padding: 40px 20px;
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            width: 100%;
+            max-width: 320px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
         }
         .space-btn {
             display: block;
-            width: 200px;
-            padding: 15px;
-            margin: 10px auto;
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
             background: none;
-            border: 1px solid rgba(255,255,255,0.3);
+            border: 1px solid rgba(255, 255, 255, 0.4);
             color: white;
-            cursor: pointer;
-            letter-spacing: 1px;
-            transition: 0.4s;
+            font-size: 1rem;
+            font-weight: 500;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        #fake-btn {
+            background: #ffffff;
+            color: #000;
+            border: none;
+            z-index: 50;
         }
         #truth-btn {
-            color: rgba(255,255,255,0.2);
+            background: rgba(255, 255, 255, 0.05);
+            color: rgba(255, 255, 255, 0.3);
+            pointer-events: auto;
         }
-        #year-vortex {
-            font-size: 8rem;
-            font-weight: 900;
-            background: linear-gradient(to bottom, #fff, #222);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            opacity: 0.1;
+        #year-text {
+            font-size: 4rem;
+            font-weight: 200;
+            letter-spacing: 10px;
+            color: rgba(255, 255, 255, 0.2);
+            text-transform: uppercase;
         }
-        .constellation-text {
-            max-width: 80%;
+        #sub-reflect {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 20px;
+            letter-spacing: 2px;
+        }
+        .message-container {
             text-align: center;
+            max-width: 90%;
             line-height: 1.8;
-            font-size: 1.2rem;
-            text-shadow: 0 0 20px rgba(255,255,255,0.5);
+            font-size: 1.25rem;
+            font-weight: 300;
+            transition: opacity 1s ease;
         }
-        .tap-zone {
+        .tap-hint {
             position: absolute;
-            bottom: 40px;
+            bottom: 50px;
             font-size: 0.7rem;
-            opacity: 0.5;
             letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.3);
+            text-transform: uppercase;
         }
         .flash {
             position: fixed;
@@ -119,21 +132,23 @@
     <div id="flash-overlay" class="flash"></div>
 
     <div id="scene-1" class="scene">
-        <div class="choice-box">
-            <p style="margin-bottom: 30px; font-style: italic;">Joy: "I love you"</p>
-            <button id="truth-btn" class="space-btn">The Truth</button>
-            <button id="fake-btn" class="space-btn">"It's just lust"</button>
+        <div class="glass-box" id="ui-card">
+            <p style="margin-bottom: 25px; font-weight: 300; letter-spacing: 1px;">Joy: "I love you"</p>
+            <div style="position: relative; height: 160px;">
+                <button id="fake-btn" class="space-btn">"It's just lust"</button>
+                <button id="truth-btn" class="space-btn">The Truth</button>
+            </div>
         </div>
     </div>
 
     <div id="scene-2" class="scene hidden">
-        <div id="year-vortex">2022</div>
-        <div style="color: rgba(255,255,255,0.4); margin-top: 20px;">Reflecting on the soul I tried to ignore...</div>
+        <div id="year-text">2022</div>
+        <div id="sub-reflect">Reflecting on the soul I tried to ignore...</div>
     </div>
 
     <div id="scene-3" class="scene hidden">
-        <div id="message-display" class="constellation-text"></div>
-        <div class="tap-zone">TAP TO ALIGN STARS</div>
+        <div id="message-display" class="message-container"></div>
+        <div id="tap-trigger" class="tap-hint">Tap to align stars</div>
     </div>
 </div>
 
@@ -142,27 +157,52 @@
     const ctx = canvas.getContext('2d');
     const truthBtn = document.getElementById('truth-btn');
     const fakeBtn = document.getElementById('fake-btn');
+    const card = document.getElementById('ui-card');
     const scene1 = document.getElementById('scene-1');
     const scene2 = document.getElementById('scene-2');
     const scene3 = document.getElementById('scene-3');
-    const yearVortex = document.getElementById('year-vortex');
+    const yearText = document.getElementById('year-text');
     const flash = document.getElementById('flash-overlay');
     const messageDisplay = document.getElementById('message-display');
+    const tapTrigger = document.getElementById('tap-trigger');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
     let stars = [];
-    let particles = [];
-    let isTransitioning = false;
+    let isConstellationMode = false;
+    let heartPoints = [];
 
     class Star {
         constructor() {
+            this.reset();
+        }
+        reset() {
             this.x = Math.random() * canvas.width;
             this.y = Math.random() * canvas.height;
+            this.originX = this.x;
+            this.originY = this.y;
             this.size = Math.random() * 1.5;
-            this.blink = Math.random() * 0.05;
             this.alpha = Math.random();
+            this.blink = Math.random() * 0.02;
+            this.vx = (Math.random() - 0.5) * 0.3;
+            this.vy = (Math.random() - 0.5) * 0.3;
+            this.targetX = null;
+            this.targetY = null;
+        }
+        update() {
+            if (isConstellationMode && this.targetX) {
+                this.x += (this.targetX - this.x) * 0.05;
+                this.y += (this.targetY - this.y) * 0.05;
+                this.alpha = 0.8;
+            } else {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha += this.blink;
+                if (this.alpha > 1 || this.alpha < 0) this.blink *= -1;
+                if (this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if (this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
         }
         draw() {
             ctx.fillStyle = `rgba(255, 255, 255, ${this.alpha})`;
@@ -170,43 +210,27 @@
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
             ctx.fill();
         }
-        update() {
-            this.alpha += this.blink;
-            if (this.alpha > 1 || this.alpha < 0) this.blink *= -1;
+    }
+
+    function createHeartPath() {
+        heartPoints = [];
+        const scale = 12;
+        for (let t = 0; t < Math.PI * 2; t += 0.1) {
+            let x = 16 * Math.pow(Math.sin(t), 3);
+            let y = -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t));
+            heartPoints.push({
+                x: x * scale + canvas.width / 2,
+                y: y * scale + canvas.height / 2 - 50
+            });
         }
     }
 
-    const thoughts = [
-        "Ina fatan tana lafiya.",
-        "I'm only looking for you",
-        "The soul God put in you.",
-        "The way you speak Hausa...",
-        "Every atom is waiting.",
-        "Zuciyata ba ta karya take yi ba.",
-        "Perfection I see in you.",
-        "Why did I lie?"
-    ];
-
-    const finalStory = [
-        "I love you and every atom in my body, every fiber loves you.",
-        "I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa.",
-        "I meant this in every way. I didn't just love your flesh, I loved the soul God put in you.",
-        "I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.",
-        "My love for you isn't a phase neither is it a 'to' cause this 'to' shall not pass away.",
-        "I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.",
-        "I see your text message and I use over an hour to wonder what I should reply to it with...",
-        "Not out of confusion, but out of respect and the perfection I see in you.",
-        "You are my everlasting twin flame that will keep burning.",
-        "Eventually someday I'll meet you, and on one knee will I go down.",
-        "<span style='color:#ff4d4d; font-size: 2rem; font-weight: bold;'>Zuciyata tana bugawa gareki.</span>"
-    ];
-
     function initStars() {
-        for(let i=0; i<200; i++) stars.push(new Star());
+        for (let i = 0; i < 250; i++) stars.push(new Star());
     }
 
     function animate() {
-        ctx.fillStyle = 'rgba(2, 2, 5, 0.2)';
+        ctx.fillStyle = '#010103';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         stars.forEach(s => { s.update(); s.draw(); });
         requestAnimationFrame(animate);
@@ -214,9 +238,22 @@
 
     truthBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
+        const fakeRect = fakeBtn.getBoundingClientRect();
+        let newX, newY;
+        let tooClose = true;
+
+        while (tooClose) {
+            newX = Math.random() * (window.innerWidth - 140);
+            newY = Math.random() * (window.innerHeight - 60);
+            
+            const dist = Math.sqrt(Math.pow(newX - fakeRect.left, 2) + Math.pow(newY - fakeRect.top, 2));
+            if (dist > 150) tooClose = false;
+        }
+
         truthBtn.style.position = 'fixed';
-        truthBtn.style.left = Math.random() * (window.innerWidth - 150) + 'px';
-        truthBtn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
+        truthBtn.style.left = newX + 'px';
+        truthBtn.style.top = newY + 'px';
+        truthBtn.style.width = '140px';
     });
 
     fakeBtn.addEventListener('click', () => {
@@ -224,50 +261,74 @@
         setTimeout(() => {
             scene1.style.display = 'none';
             scene2.classList.remove('hidden');
-            startCosmicReflection();
-        }, 2000);
+            startReflectionLoop();
+        }, 1500);
     });
 
-    function startCosmicReflection() {
+    function startReflectionLoop() {
         let yr = 2022;
         const interval = setInterval(() => {
             if (yr < 2025) {
                 yr++;
-                yearVortex.innerText = yr;
+                yearText.innerText = yr;
             } else {
                 clearInterval(interval);
                 setTimeout(() => {
-                    yearVortex.innerText = "DECEMBER";
-                    yearVortex.style.opacity = "0.5";
+                    yearText.style.fontSize = "3rem";
+                    yearText.style.letterSpacing = "5px";
+                    yearText.style.color = "#ff4d4d";
+                    yearText.innerText = "DECEMBER";
                 }, 1000);
-                setTimeout(triggerSupernova, 3500);
+                setTimeout(supernova, 4000);
             }
-        }, 1500);
+        }, 2000);
     }
 
-    function triggerSupernova() {
+    function supernova() {
         flash.style.opacity = '1';
         setTimeout(() => {
             scene2.style.display = 'none';
             scene3.classList.remove('hidden');
             flash.style.opacity = '0';
-            showNextMessage();
+            createHeartPath();
+            nextMsg();
         }, 1000);
     }
 
-    let messageIndex = 0;
-    function showNextMessage() {
-        if (messageIndex < finalStory.length) {
+    const content = [
+        "I love you and every atom in my body, every fiber loves you.",
+        "I loved everything about you, from the way you talk to the way you laugh, to the way you speak Hausa.",
+        "I mean this in every way. I don't just love your flesh, I love the soul God put in you.",
+        "I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.",
+        "My love for you isn't a phase neither is it a 'to' cause this 'to' shall not pass away.",
+        "I see your text message and I use over an hour to wonder what I should reply to it with out of respect and the perfection I see in you.",
+        "You are my everlasting twin flame that will keep burning.",
+        "Eventually someday I'll meet you, and on one knee will I go down.",
+        "<span style='color:#ff4d4d; font-size: 1.8rem; font-weight: bold;'>Zuciyata tana bugawa gareki.</span>"
+    ];
+
+    let idx = 0;
+    function nextMsg() {
+        if (idx < content.length) {
             messageDisplay.style.opacity = 0;
             setTimeout(() => {
-                messageDisplay.innerHTML = finalStory[messageIndex];
+                messageDisplay.innerHTML = content[idx];
                 messageDisplay.style.opacity = 1;
-                messageIndex++;
-            }, 500);
+                idx++;
+                if (idx === content.length) {
+                    isConstellationMode = true;
+                    stars.forEach((s, i) => {
+                        const target = heartPoints[i % heartPoints.length];
+                        s.targetX = target.x + (Math.random() - 0.5) * 20;
+                        s.targetY = target.y + (Math.random() - 0.5) * 20;
+                    });
+                    tapTrigger.style.display = 'none';
+                }
+            }, 600);
         }
     }
 
-    scene3.addEventListener('click', showNextMessage);
+    scene3.addEventListener('click', nextMsg);
 
     initStars();
     animate();
