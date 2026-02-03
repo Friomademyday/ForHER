@@ -12,9 +12,15 @@
             height: 100%;
             background-color: #000;
             color: #fff;
-            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "Helvetica Neue", Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
             overflow: hidden;
             -webkit-font-smoothing: antialiased;
+            /* Fixes the highlighting/selection issue */
+            -webkit-user-select: none;
+            -moz-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            -webkit-touch-callout: none;
         }
         #main-container {
             width: 100%;
@@ -33,18 +39,11 @@
             align-items: center;
             padding: 30px;
             box-sizing: border-box;
-            transition: opacity 1.5s ease;
+            transition: opacity 1s ease;
         }
         .hidden {
             opacity: 0;
             pointer-events: none;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 400px;
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
         }
         .bubble {
             background: #262629;
@@ -52,52 +51,28 @@
             border-radius: 20px;
             max-width: 85%;
             font-size: 1.1rem;
-            line-height: 1.4;
             align-self: flex-start;
             border-bottom-left-radius: 4px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .joy-name {
-            font-size: 0.8rem;
-            color: #8e8e93;
-            margin-bottom: 4px;
-            margin-left: 8px;
-        }
-        .options {
-            margin-top: 40px;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            width: 100%;
         }
         .ios-btn {
             width: 100%;
+            max-width: 280px;
             padding: 18px;
             border-radius: 14px;
             border: none;
             font-size: 1rem;
             font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s, background 0.3s;
+            margin-top: 15px;
         }
-        #real-btn {
-            background: rgba(255, 255, 255, 0.1);
-            color: #444;
-            border: 1px solid #333;
-        }
-        #fake-btn {
-            background: #fff;
-            color: #000;
-        }
-        #reflection-view {
-            background: #000;
-        }
+        #fake-btn { background: #fff; color: #000; }
+        #real-btn { background: rgba(255, 255, 255, 0.1); color: #555; border: 1px solid #333; }
+        
         #year-display {
-            font-size: 5rem;
-            font-weight: 200;
-            color: rgba(255,255,255,0.05);
+            font-size: 6rem;
+            font-weight: 100;
+            color: rgba(255,255,255,0.1);
             position: absolute;
-            z-index: 0;
+            pointer-events: none; /* Prevents clicking/highlighting the year */
         }
         #thought-canvas {
             position: absolute;
@@ -105,52 +80,28 @@
             left: 0;
             width: 100%;
             height: 100%;
-            z-index: 1;
         }
-        .holding-prompt {
-            position: absolute;
-            bottom: 50px;
-            color: #8e8e93;
-            font-size: 0.9rem;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        #confession-view {
-            display: block;
-            overflow-y: auto;
-            background: #000;
-            padding: 60px 25px;
-        }
-        .letter-wrapper {
-            max-width: 600px;
-            margin: 0 auto;
-        }
-        .typing-dot {
-            width: 6px;
-            height: 6px;
-            background: #8e8e93;
-            border-radius: 50%;
-            display: inline-block;
-            animation: bounce 1.4s infinite ease-in-out both;
-        }
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1.0); }
-        }
-        .reveal-text {
-            font-size: 1.25rem;
-            line-height: 1.7;
-            color: #efefef;
-            font-weight: 400;
-        }
-        .final-hausa {
-            margin-top: 50px;
-            font-size: 1.8rem;
-            color: #ff3b30;
-            font-weight: 700;
+        .envelope-text {
+            font-family: "Times New Roman", serif;
+            font-size: 1.4rem;
+            line-height: 1.6;
             text-align: center;
+            max-width: 90%;
+            transition: all 0.8s ease;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        .envelope-text.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .tap-hint {
+            position: absolute;
+            bottom: 40px;
+            font-size: 0.7rem;
+            color: #444;
+            letter-spacing: 2px;
+            text-transform: uppercase;
         }
     </style>
 </head>
@@ -158,12 +109,10 @@
 
 <div id="main-container">
     <div id="view-1" class="view">
-        <div class="chat-container">
-            <div>
-                <div class="joy-name">Joy</div>
-                <div class="bubble">I love you</div>
-            </div>
-            <div class="options">
+        <div style="width: 100%; max-width: 400px;">
+            <div style="font-size: 0.8rem; color: #8e8e93; margin-bottom: 5px; margin-left: 10px;">Joy</div>
+            <div class="bubble">I love you</div>
+            <div style="margin-top: 40px; display: flex; flex-direction: column; align-items: center;">
                 <button id="real-btn" class="ios-btn">I love you too</button>
                 <button id="fake-btn" class="ios-btn">It's just lust</button>
             </div>
@@ -173,18 +122,12 @@
     <div id="view-2" class="view hidden">
         <div id="year-display">2022</div>
         <canvas id="thought-canvas"></canvas>
-        <div class="holding-prompt">Hold to remember...</div>
+        <div style="position: absolute; bottom: 80px; color: #444; font-size: 0.8rem;">HOLD TO REFLECT</div>
     </div>
 
     <div id="view-3" class="view hidden">
-        <div class="letter-wrapper">
-            <div id="ios-typing" style="margin-bottom: 30px;">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
-            <div id="letter-body" class="reveal-text"></div>
-        </div>
+        <div id="message-target" class="envelope-text"></div>
+        <div class="tap-hint">Tap to continue</div>
     </div>
 </div>
 
@@ -194,16 +137,15 @@
     const view1 = document.getElementById('view-1');
     const view2 = document.getElementById('view-2');
     const view3 = document.getElementById('view-3');
+    const yearDisplay = document.getElementById('year-display');
     const canvas = document.getElementById('thought-canvas');
     const ctx = canvas.getContext('2d');
-    const yearDisplay = document.getElementById('year-display');
-    const letterBody = document.getElementById('letter-body');
-    const typingIndicator = document.getElementById('ios-typing');
+    const messageTarget = document.getElementById('message-target');
 
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
 
-    const thoughtTexts = [
+    const phrases = [
         "Why did I lie?",
         "Ina fatan tana lafiya.",
         "I'm surrounded by people but I'm only looking for you",
@@ -214,22 +156,29 @@
         "I loved you then. I just didn't want to admit it.",
         "Is she laughing right now?",
         "It was never a phase.",
-        "Why do I worry?",
-        "It's obvious, isn't it?",
-        "I loved your soul, not just your flesh.",
-        "You're the perfection I see."
+        "Zuciyata ba ta karya take yi ba.",
+        "I loved your soul, not just your flesh."
     ];
 
-    const confession = `I love you and every atom in my body, every fiber loves you. I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa, your face, your personality.<br><br>I meant this in every way. I didn't just love your flesh, I loved the soul God put in you—it was so pure and natural. I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.<br><br>Even if it doesn't work out I'll always be there for you cause my love for you isn't a phase neither is it a "to" cause this "to" shall not pass away.<br><br>You make me want to be a better human being overall. I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.<br><br>I see your text message and I use over an hour to wonder what I should reply to it with... not out of confusion, but out of respect and the perfection I see in you.<br><br>You are my everlasting twin flame that will keep burning. And even though we're miles away, I'll grow.<br><br>Eventually someday I'll meet you, and on one knee will I go down.`;
+    const confessionSteps = [
+        "I love you and every atom in my body, every fiber loves you.",
+        "I loved everything about you from the way you talk to the way you laugh, to the way you speak Hausa.",
+        "I meant this in every way. I didn't just love your flesh, I loved the soul God put in you—it was so pure and natural.",
+        "I never wanted you to be out of my life, even if you wanted to push me away, I'll always come back.",
+        "My love for you isn't a phase neither is it a 'to' cause this 'to' shall not pass away.",
+        "I hear a song and I think about you. I watch a movie and I think about you. I see an old couple and I think about you.",
+        "I see your text message and I use over an hour to wonder what I should reply to it with...",
+        "Not out of confusion, but out of respect and the perfection I see in you.",
+        "You are my everlasting twin flame that will keep burning.",
+        "Eventually someday I'll meet you, and on one knee will I go down.",
+        "<span style='color:#ff3b30; font-weight:bold; font-size:2rem;'>Zuciyata tana bugawa gareki.</span>"
+    ];
 
     realBtn.addEventListener('touchstart', (e) => {
         e.preventDefault();
-        const x = Math.random() * (window.innerWidth - 150);
-        const y = Math.random() * (window.innerHeight - 100);
         realBtn.style.position = 'fixed';
-        realBtn.style.left = x + 'px';
-        realBtn.style.top = y + 'px';
-        realBtn.style.opacity = '0.5';
+        realBtn.style.left = Math.random() * (window.innerWidth - 150) + 'px';
+        realBtn.style.top = Math.random() * (window.innerHeight - 100) + 'px';
     });
 
     fakeBtn.addEventListener('click', () => {
@@ -237,100 +186,85 @@
         setTimeout(() => {
             view1.style.display = 'none';
             view2.classList.remove('hidden');
-        }, 1500);
+        }, 1000);
     });
 
     let holdActive = false;
-    let currentYear = 2022;
-    let particles = [];
+    let year = 2022;
+    let pArray = [];
 
-    class Particle {
-        constructor(text) {
+    class P {
+        constructor() {
             this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.text = text;
-            this.opacity = 0;
-            this.speed = Math.random() * 0.5 + 0.2;
+            this.y = canvas.height + 20;
+            this.t = phrases[Math.floor(Math.random() * phrases.length)];
+            this.o = 0;
+            this.s = Math.random() * 1 + 0.5;
+        }
+        up() {
+            this.y -= this.s;
+            if (this.o < 0.5) this.o += 0.01;
         }
         draw() {
-            ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-            ctx.font = '14px -apple-system';
-            ctx.fillText(this.text, this.x, this.y);
-        }
-        update() {
-            this.y -= this.speed;
-            if (this.opacity < 0.6) this.opacity += 0.01;
-            if (this.y < -20) {
-                this.y = canvas.height + 20;
-                this.opacity = 0;
-            }
+            ctx.fillStyle = `rgba(255,255,255,${this.o})`;
+            ctx.font = '12px -apple-system';
+            ctx.fillText(this.t, this.x, this.y);
         }
     }
 
-    function animateAbyss() {
+    function loop() {
         if (!holdActive) return;
         ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => {
-            p.update();
+        if (Math.random() < 0.1) pArray.push(new P());
+        pArray.forEach((p, i) => {
+            p.up();
             p.draw();
+            if (p.y < -50) pArray.splice(i, 1);
         });
-        requestAnimationFrame(animateAbyss);
+        requestAnimationFrame(loop);
     }
 
-    window.addEventListener('touchstart', (e) => {
-        if (view2.classList.contains('hidden')) return;
+    view2.addEventListener('touchstart', () => {
         holdActive = true;
-        animateAbyss();
-        holdInterval = setInterval(() => {
-            if (currentYear < 2026) {
-                currentYear++;
-                yearDisplay.innerText = currentYear === 2026 ? "December" : currentYear;
-                if (particles.length < 25) {
-                    particles.push(new Particle(thoughtTexts[Math.floor(Math.random() * thoughtTexts.length)]));
-                }
+        loop();
+        yInt = setInterval(() => {
+            if (year < 2026) {
+                year++;
+                yearDisplay.innerText = year === 2026 ? "December" : year;
             } else {
-                clearInterval(holdInterval);
-                finishReflection();
+                clearInterval(yInt);
+                toFinal();
             }
         }, 150);
     });
 
-    window.addEventListener('touchend', () => {
+    view2.addEventListener('touchend', () => {
         holdActive = false;
-        clearInterval(holdInterval);
+        clearInterval(yInt);
     });
 
-    function finishReflection() {
+    function toFinal() {
         view2.classList.add('hidden');
         setTimeout(() => {
             view2.style.display = 'none';
             view3.classList.remove('hidden');
-            initFinalType();
-        }, 1500);
+            showStep();
+        }, 1000);
     }
 
-    function initFinalType() {
-        setTimeout(() => {
-            typingIndicator.style.display = 'none';
-            let index = 0;
-            const type = () => {
-                if (index < confession.length) {
-                    if (confession.substring(index, index + 4) === '<br>') {
-                        letterBody.innerHTML += '<br>';
-                        index += 4;
-                    } else {
-                        letterBody.innerHTML += confession.charAt(index);
-                        index++;
-                    }
-                    setTimeout(type, 45);
-                    view3.scrollTop = view3.scrollHeight;
-                } else {
-                    letterBody.innerHTML += '<div class="final-hausa">Zuciyata tana bugawa gareki.</div>';
-                }
-            };
-            type();
-        }, 4000);
+    let currentStep = 0;
+    function showStep() {
+        if (currentStep < confessionSteps.length) {
+            messageTarget.classList.remove('active');
+            setTimeout(() => {
+                messageTarget.innerHTML = confessionSteps[currentStep];
+                messageTarget.classList.add('active');
+                currentStep++;
+            }, 500);
+        }
     }
+
+    view3.addEventListener('click', showStep);
 </script>
 
 </body>
